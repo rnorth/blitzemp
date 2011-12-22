@@ -12,6 +12,6 @@ if __name__ == "__main__":
 		print "Blitzing %s nodes named/tagged '%s'\n\n" % (tag, command)
 	else:
 		tag = ""
-		print "Blitzing all nodes named/tagged '%s'\n\n" % command
+		print "Blitzing all nodes '%s'\n\n" % command
 
 	sync(command, tag)
