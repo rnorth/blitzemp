@@ -1,0 +1,61 @@
+# Blitz 'em
+
+blitzem is a simple cloud server management tool, inspired by [Vagrant](http://vagrantup.com). 
+This tool is just a proof-of-concept at the current time, and quite likely to change.
+
+(c) Richard North 2011, released under the Apache 2 Licence.
+
+## Pre-requisites
+
+    $ pip install apache_libcloud
+    $ pip install paramiko
+    
+Add the folder holding blitzem to your PATH.
+
+## Usage
+
+Tailor the `environment.py` file to suit your desired server environment - example content shown here:
+
+    Node( name="web1",
+		      tags=["web"])
+
+    Node(	name="web2",
+    		  os="Ubuntu 11.04",
+    		  tags=["web", "peakload"])
+
+    Node(	name="app1",
+    		  os="Ubuntu 11.04",
+    		  tags=["app"])
+
+    Node(	name="app2",
+    		  os="Ubuntu 11.04",
+    		  tags=["app", "peakload"])
+
+    Node(	name="db1",
+    		  tags=["db"])
+
+Using the configuration example given above:
+ * web1 and db1 will inherit default 'OS' settings rather than specifying their own
+ * web1 and web2 will be tagged in the 'web' tier of servers, while app1 and app2 will be tagged in the 'app' tier
+ * web2 and app2 are also tagged 'peakload', which allows them to be brought up/down separately
+
+For example:
+
+    $ blitzem up                    # will launch all nodes if they are not already running
+    
+    $ blitzem up app                # will launch just the nodes tagged 'app' if they're not already running
+    
+    $ blitzem down web              # brings down all 'web' tagged nodes
+    
+    $ blitzem up peakload           # brings up 'peakload' nodes (e.g. during peak periods of the day)
+    
+    $ blitzem ssh db1               # launches an interactive SSH session to db1
+    
+    $ blitzem reboot web            # runs a rolling reboot of the 'web' tier
+    
+# Limitations
+
+* Only supports Rackspace Cloud UK as a service provider
+* All nodes will be the smallest (256MB/10GB) size until this becomes configurable
+* No control over provisioning steps - by default, the tool copies your public SSH key to each node's root account for SSH authentication, and installs puppet using 'apt-get'. All of this will be made configurable.
+* **This tool is highly experimental and the author takes absolutely no responsibility for any consequences of its use!**
