@@ -6,8 +6,10 @@ import os
 from os import path
 import ConfigParser
 import subprocess
+import paramiko
 
 libcloud.security.VERIFY_SSL_CERT = False
+# paramiko.util.log_to_file('paramiko.log')
 
 class Size:
 	def __init__(self, ram=None, disk=None):

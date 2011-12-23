@@ -28,6 +28,5 @@ Node(	name="db1",
 		deployment=MultiStepDeployment([
 			SSHKeyDeployment(open(os.path.expanduser("~/.ssh/id_rsa.pub")).read()),
 			ScriptDeployment("apt-get update"),
-			ScriptDeployment("apt-get -y install puppet"),
-			ScriptDeployment("apt-get -y install mysql-server")
+			ScriptDeployment("apt-get -y install puppet")
 		]))
