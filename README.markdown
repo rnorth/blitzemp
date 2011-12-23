@@ -3,7 +3,7 @@
 blitzem is a simple cloud server management tool, inspired by [Vagrant](http://vagrantup.com). 
 This tool is just a proof-of-concept at the current time, and quite likely to change.
 
-(c) Richard North 2011, released under the Apache 2 Licence.
+(c) Richard North 2011, released under the BSD Licence (see LICENCE.txt).
 
 ## Pre-requisites
 
