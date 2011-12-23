@@ -34,12 +34,18 @@ Tailor the `environment.py` file to suit your desired server environment - examp
 
     Node(	name="db1",
     		  tags=["db"],
-              size=Size(ram=8192))
+              size=Size(ram=8192),
+              deployment=MultiStepDeployment([
+                                SSHKeyDeployment(open(os.path.expanduser("~/.ssh/id_rsa.pub")).read()),
+                                ScriptDeployment("apt-get update"),
+                                ScriptDeployment("apt-get -y install puppet")])))
 
 Using the configuration example given above:
  * web1 and db1 will inherit default 'OS' settings rather than specifying their own
  * web1 and web2 will be tagged in the 'web' tier of servers, while app1 and app2 will be tagged in the 'app' tier
  * web2 and app2 are also tagged 'peakload', which allows them to be brought up/down separately
+ * all nodes will be sized at the default 256MB RAM, except web2 and db1, which will be 512MB and 8192MB instances respectively
+ * db1 will have custom deployment steps (additional installation of puppet, on top of the defaults)
 
 For example:
 
@@ -58,5 +64,4 @@ For example:
 # Limitations
 
 * Only supports Rackspace Cloud UK as a service provider
-* No control over provisioning steps - by default, the tool copies your public SSH key to each node's root account for SSH authentication, and installs puppet using 'apt-get'. All of this will be made configurable.
 * **This tool is highly experimental and the author takes absolutely no responsibility for any consequences of its use!**

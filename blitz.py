@@ -23,8 +23,7 @@ defaults ={
 		# Note: This key will be added to the authorized keys for the root user
 		# (/root/.ssh/authorized_keys)
 		SSHKeyDeployment(open(os.path.expanduser("~/.ssh/id_rsa.pub")).read()),
-		ScriptDeployment("apt-get update"),
-		ScriptDeployment("apt-get -y install puppet")
+		ScriptDeployment("apt-get update")
 	])
 }
 
