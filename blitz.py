@@ -16,7 +16,14 @@ class Size:
 
 defaults ={
 	"os": "Ubuntu 11.10",
-	"size": Size(ram=256, disk=10)
+	"size": Size(ram=256, disk=10),
+	"deployment": MultiStepDeployment([
+		# Note: This key will be added to the authorized keys for the root user
+		# (/root/.ssh/authorized_keys)
+		SSHKeyDeployment(open(os.path.expanduser("~/.ssh/id_rsa.pub")).read()),
+		ScriptDeployment("apt-get update"),
+		ScriptDeployment("apt-get -y install puppet")
+	])
 }
 
 nodes = {}
@@ -45,7 +52,7 @@ def find_size(conn, size):
 	return sizes[0]
 
 class Node:
-	def __init__(self, name, os=None, tags=[], size=None):
+	def __init__(self, name, os=None, tags=[], size=None, deployment=None):
 		self._name = name
 		if os == None:
 			self._os = defaults["os"]
@@ -61,6 +68,11 @@ class Node:
 			self._size = defaults["size"]
 		else:
 			self._size = size
+		
+		if deployment == None:
+			self._deployment = defaults["deployment"]
+		else:
+			self._deployment = deployment
 		
 		nodes[name] = self
 		# print "Instantiated node %s" % name
@@ -85,18 +97,9 @@ class Node:
 			image = find_image(conn, self._os)
 			print "    Selected image is '%s'" % image.name
 
-			# read your public key in
-			# Note: This key will be added to the authorized keys for the root user
-			# (/root/.ssh/authorized_keys)
-			sd = SSHKeyDeployment(open(os.path.expanduser("~/.ssh/id_rsa.pub")).read())
-			# a simple script to install puppet post boot, can be much more complicated.
-			script = ScriptDeployment("apt-get -y install puppet")
-			# a task that first installs the ssh key, and then runs the script
-			msd = MultiStepDeployment([sd, script])
-
-			print "    Creating new node %s %s %s %s" % (self._name, image.name, size.name, self._tags)
+			print "    Creating new node named:%s using image: '%s', size: '%s' and tagged %s. Deployment steps will be %s" % (self._name, image.name, size.name, self._tags, self._deployment)
 			# deploy_node takes the same base keyword arguments as create_node.
-			node = conn.deploy_node(name=self._name, image=image, size=size, deploy=msd)
+			node = conn.deploy_node(name=self._name, image=image, size=size, deploy=self._deployment)
 
 			print "    Created node %s" % node
 	

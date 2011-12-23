@@ -1,4 +1,8 @@
+import os
+
 from blitz import Node, Size, defaults
+from libcloud.compute.deployment import MultiStepDeployment, ScriptDeployment, SSHKeyDeployment
+
 
 defaults["os"] = "Ubuntu 11.10"
 
@@ -20,4 +24,10 @@ Node(	name="app2",
 
 Node(	name="db1",
 		os="Ubuntu 11.04",
-		tags=["db"])
+		tags=["db"],
+		deployment=MultiStepDeployment([
+			SSHKeyDeployment(open(os.path.expanduser("~/.ssh/id_rsa.pub")).read()),
+			ScriptDeployment("apt-get update"),
+			ScriptDeployment("apt-get -y install puppet"),
+			ScriptDeployment("apt-get -y install mysql-server")
+		]))
