@@ -21,7 +21,8 @@ Tailor the `environment.py` file to suit your desired server environment - examp
 
     Node(	name="web2",
     		  os="Ubuntu 11.04",
-    		  tags=["web", "peakload"])
+    		  tags=["web", "peakload"],
+              size=Size(ram=512))
 
     Node(	name="app1",
     		  os="Ubuntu 11.04",
@@ -32,7 +33,8 @@ Tailor the `environment.py` file to suit your desired server environment - examp
     		  tags=["app", "peakload"])
 
     Node(	name="db1",
-    		  tags=["db"])
+    		  tags=["db"],
+              size=Size(ram=8192))
 
 Using the configuration example given above:
  * web1 and db1 will inherit default 'OS' settings rather than specifying their own
@@ -56,6 +58,5 @@ For example:
 # Limitations
 
 * Only supports Rackspace Cloud UK as a service provider
-* All nodes will be the smallest (256MB/10GB) size until this becomes configurable
 * No control over provisioning steps - by default, the tool copies your public SSH key to each node's root account for SSH authentication, and installs puppet using 'apt-get'. All of this will be made configurable.
 * **This tool is highly experimental and the author takes absolutely no responsibility for any consequences of its use!**
