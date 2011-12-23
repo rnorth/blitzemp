@@ -9,8 +9,14 @@ import subprocess
 
 libcloud.security.VERIFY_SSL_CERT = False
 
+class Size:
+	def __init__(self, ram=None, disk=None):
+		self.ram = ram
+		self.disk = disk
+
 defaults ={
-	"os": "Ubuntu 11.10"
+	"os": "Ubuntu 11.10",
+	"size": Size(ram=256, disk=10)
 }
 
 nodes = {}
@@ -28,18 +34,18 @@ def find_node(conn, name):
 		raise Exception("Node %s not found" % name)
 	return nodes[0]
 
-def find_size(conn, ram=None, disk=None):
+def find_size(conn, size):
 	sizes = conn.list_sizes()
-	if ram != None:
-		sizes = [obj for obj in sizes if obj.ram == ram]
-	if disk != None:
-		sizes = [obj for obj in sizes if obj.disk == disk]
+	if size.ram != None:
+		sizes = [obj for obj in sizes if obj.ram == size.ram]
+	if size.disk != None:
+		sizes = [obj for obj in sizes if obj.disk == size.disk]
 	if len(sizes) == 0:
-		raise Exception("Could not find a size for RAM:%d and disk:%d")
+		raise Exception("Could not find a size for RAM:%d and disk:%d" % (size.ram, size.disk))
 	return sizes[0]
 
 class Node:
-	def __init__(self, name, os=None, tags=[]):
+	def __init__(self, name, os=None, tags=[], size=None):
 		self._name = name
 		if os == None:
 			self._os = defaults["os"]
@@ -50,6 +56,11 @@ class Node:
 			self._tags = defaults["tags"]
 		else:
 			self._tags = tags
+
+		if size == None:
+			self._size = defaults["size"]
+		else:
+			self._size = size
 		
 		nodes[name] = self
 		# print "Instantiated node %s" % name
@@ -69,7 +80,7 @@ class Node:
 		except Exception:
 			print "    Does not exist: %s" % self._name
 
-			size = find_size(conn, 256, 10)
+			size = find_size(conn, self._size)
 			print "    Selected size is %s (RAM:%s, Disk: %d, Price: %f)" % (size.name, size.ram, size.disk, size.price)
 			image = find_image(conn, self._os)
 			print "    Selected image is '%s'" % image.name

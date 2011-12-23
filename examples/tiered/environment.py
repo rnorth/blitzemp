@@ -1,4 +1,4 @@
-from blitz import Node, defaults
+from blitz import Node, Size, defaults
 
 defaults["os"] = "Ubuntu 11.10"
 
@@ -7,7 +7,8 @@ Node(	name="web1",
 
 Node(	name="web2",
 		os="Ubuntu 11.04",
-		tags=["web", "peakload"])
+		tags=["web", "peakload"],
+		size=Size(ram=512))
 
 Node(	name="app1",
 		os="Ubuntu 11.04",
