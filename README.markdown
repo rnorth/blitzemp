@@ -7,6 +7,8 @@ This tool is just a proof-of-concept at the current time, and quite likely to ch
 
 ## Pre-requisites
 
+blitzem will be put in to a proper Python package in due course - for now the following dependencies need to be in place:
+
     $ pip install apache_libcloud
     $ pip install paramiko
     
@@ -41,6 +43,7 @@ Tailor the `environment.py` file to suit your desired server environment - examp
                                 ScriptDeployment("apt-get -y install puppet")])))
 
 Using the configuration example given above:
+
  * web1 and db1 will inherit default 'OS' settings rather than specifying their own
  * web1 and web2 will be tagged in the 'web' tier of servers, while app1 and app2 will be tagged in the 'app' tier
  * web2 and app2 are also tagged 'peakload', which allows them to be brought up/down separately
@@ -64,4 +67,5 @@ For example:
 # Limitations
 
 * Only supports Rackspace Cloud UK as a service provider
+* Other issues/potential improvements listed [here](https://github.com/rnorth/blitzem/issues?sort=created&direction=asc&state=open)
 * **This tool is highly experimental and the author takes absolutely no responsibility for any consequences of its use!**
