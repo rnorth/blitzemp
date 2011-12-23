@@ -59,7 +59,7 @@ For example:
     
     $ blitzem ssh db1               # launches an interactive SSH session to db1
     
-    $ blitzem reboot web            # runs a rolling reboot of the 'web' tier
+    $ blitzem reboot web            # runs a reboot of the 'web' tier
     
 # Limitations
 
