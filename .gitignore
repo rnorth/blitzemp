@@ -1,10 +1,13 @@
 .Python
 .installed.cfg
+MANIFEST
 
 bin/
 include/
 lib/
 blitzem.egg-info/
+build/
+dist/
 
 **/*.pyc
 *.pyc
