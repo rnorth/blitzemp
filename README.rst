@@ -4,17 +4,12 @@ Blitz 'em
 
 blitzem is a simple cloud server management tool, inspired by Vagrant. This tool is just a proof-of-concept at the current time, and quite likely to change.
 
-(c) Richard North 2011, released under the BSD Licence (see LICENCE.txt).
+Copyright Richard North 2011, released under the BSD Licence (see LICENCE.txt).
 
-Pre-requisites
-==============
+Installation
+============
 
-blitzem will be put in to a proper Python package in due course - for now the following dependencies need to be in place:
-
-    $ pip install apache_libcloud
-    $ pip install paramiko
-
-Add the folder holding blitzem to your PATH.
+    python setup.py install
 
 Usage
 =====
