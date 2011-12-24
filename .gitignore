@@ -1,0 +1,6 @@
+.Python
+bin/
+blitz.pyc
+examples/tiered/paramiko.log
+include/
+lib/
