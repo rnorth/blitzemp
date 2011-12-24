@@ -6,8 +6,15 @@ blitzem is a simple cloud server management tool, inspired by Vagrant. This tool
 
 Copyright Richard North 2011, released under the BSD Licence (see LICENCE.txt).
 
-Installation
-============
+Install using pip
+=================
+
+Enter::
+
+    pip install blitzem
+
+Building from source
+====================
 
 Enter::
 
@@ -90,3 +97,5 @@ On ubuntu, the following packages must be installed to enable blitzem to be buil
 * python-setuptools
 
 * python-virtualenv
+
+* libbz2-dev

@@ -1,6 +1,26 @@
-import distribute_setup
-distribute_setup.use_setuptools()
+import os
+import urllib
+
 from distutils.core import setup
+
+# this function borrowed from https://bitbucket.org/wnielson/django-chronograph
+def setup_distribute():
+    """
+    This will download and install Distribute.
+    """
+    try:
+        import distribute_setup
+    except:
+        # Make sure we have Distribute
+        if not os.path.exists('distribute_setup'):
+            urllib.urlretrieve('http://nightly.ziade.org/distribute_setup.py',
+                               './distribute_setup.py')
+        distribute_setup = __import__('distribute_setup')
+    distribute_setup.use_setuptools()
+
+# Make sure we have Distribute installed
+setup_distribute()
+
 
 setup(
     name='blitzem',
