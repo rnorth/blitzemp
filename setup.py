@@ -9,7 +9,7 @@ setup(
     author_email='rich.north@gmail.com',
     packages=['blitzem','blitzem.test'],
     license='BSD',
-    long_description=open('README.txt').read(),
+    long_description=open('README.rst').read(),
     install_requires=[
         "apache_libcloud == 0.7.1",
         "paramiko == 1.7.7.1",
