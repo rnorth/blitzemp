@@ -77,3 +77,16 @@ Limitations
 * Other issues/potential improvements listed here
 
 * This tool is highly experimental and the author takes absolutely no responsibility for any consequences of its use!
+
+Building notes
+==============
+
+On ubuntu, the following packages must be installed to enable blitzem to be built (mainly for the prerequisites of apache libcloud). Other platforms may have similar requirements if not already installed:
+
+* python-dev
+
+* gcc
+
+* python-setuptools
+
+* python-virtualenv
