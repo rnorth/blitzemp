@@ -4,7 +4,7 @@ import sys
 
 from blitzem.core import sync
 
-if __name__ == "__main__":
+def main():
 
 	execfile("environment.py", locals(), globals())
 

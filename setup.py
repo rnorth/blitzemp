@@ -10,9 +10,13 @@ setup(
     packages=['blitzem','blitzem.test'],
     license='BSD',
     long_description=open('README.txt').read(),
-    scripts=['scripts/blitzem'],
     install_requires=[
         "apache_libcloud == 0.7.1",
         "paramiko == 1.7.7.1",
     ],
+    entry_points = {
+        'console_scripts': [
+            'blitzem = blitzem.console:main',
+        ],
+    },
 )
