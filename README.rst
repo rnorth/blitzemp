@@ -52,7 +52,7 @@ Using the configuration example given above:
 
 * db1 will have custom deployment steps (additional installation of puppet, on top of the defaults)
 
-For example:
+With an environment.py in the current working directory, the ``blitzem`` command can be used to control the environment. For example:
 
    $ blitzem up                    # will launch all nodes if they are not already running
 
