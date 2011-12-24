@@ -6,6 +6,7 @@ if sys.version_info < (2, 7):
 else:
     import unittest
 
+
 class TestAll(unittest.TestCase):
 
     def setUp(self):
@@ -32,4 +33,8 @@ class TestAll(unittest.TestCase):
             self.assertTrue(element in self.seq)
 
 if __name__ == '__main__':
-    unittest.main()
+
+    suite = unittest.TestSuite()
+    suite.addTest(TestAll())
+
+    unittest.TextTestRunner(verbosity=2).run(suite())
