@@ -9,6 +9,8 @@ Copyright Richard North 2011, released under the BSD Licence (see LICENCE.txt).
 Installation
 ============
 
+Enter::
+
     python setup.py install
 
 Usage
@@ -52,7 +54,7 @@ Using the configuration example given above:
 
 * db1 will have custom deployment steps (additional installation of puppet, on top of the defaults)
 
-With an environment.py in the current working directory, the ``blitzem`` command can be used to control the environment. For example:
+With an environment.py in the current working directory, the ``blitzem`` command can be used to control the environment. For example::
 
    $ blitzem up                    # will launch all nodes if they are not already running
 
