@@ -4,6 +4,7 @@ from libcloud.compute.deployment import MultiStepDeployment, ScriptDeployment, S
 import libcloud.security
 import os
 from os import path
+import textwrap
 import ConfigParser
 import subprocess
 import paramiko
@@ -16,6 +17,22 @@ class Size:
 		self.ram = ram
 		self.disk = disk
 
+class LoggedScriptDeployment(ScriptDeployment):
+	def run(self, node, client):
+		"""
+		Uploads the shell script and then executes it, and also prints out any stdout/stderr resulting from the script.
+
+		See also L{ScriptDeployment.run}
+		"""
+
+		print "    > Exec: %s" % self.script
+
+		super(LoggedScriptDeployment, self).run(node, client)
+		
+		print "    > STDOUT: \n%s" % format(self.stdout, indent=14)
+		print "    > STDERR: \n%s" % format(self.stderr, indent=14)
+		print "    > Exit Status: %s" % self.exit_status
+
 defaults ={
 	"os": "Ubuntu 11.10",
 	"size": Size(ram=256, disk=10),
@@ -23,12 +40,14 @@ defaults ={
 		# Note: This key will be added to the authorized keys for the root user
 		# (/root/.ssh/authorized_keys)
 		SSHKeyDeployment(open(os.path.expanduser("~/.ssh/id_rsa.pub")).read()),
-		ScriptDeployment("apt-get update")
+		LoggedScriptDeployment("apt-get update")
 	])
 }
 
 nodes = {}
 
+def format(text, indent=2):
+	return (" " * indent) + ("\n" + (" " * indent)).join(text.split("\n"))
 
 def find_image(conn, name):
 	images = [obj for obj in conn.list_images() if obj.name==name]
@@ -37,6 +56,7 @@ def find_image(conn, name):
 	return images[0]
 
 def find_node(conn, name):
+	print "--  Checking whether node '%s' currently exists" % name
 	nodes = [obj for obj in conn.list_nodes() if obj.name==name]
 	if len(nodes) == 0:
 		raise Exception("Node %s not found" % name)
@@ -85,8 +105,6 @@ class Node:
 		return (name_or_tag == self._name) or (name_or_tag in self._tags)
 	
 	def up(self, driver, conn):
-		print "-- Checking whether node '%s' currently exists" % self._name
-
 		try:
 			existing_node = find_node(conn, self._name)
 			print "    Found node: %s with IP address(es) %s" % (self._name, existing_node.public_ips)
@@ -102,36 +120,30 @@ class Node:
 			# deploy_node takes the same base keyword arguments as create_node.
 			node = conn.deploy_node(name=self._name, image=image, size=size, deploy=self._deployment)
 
-			print "    Created node %s" % node
+			print "--  Created node %s (%s)" % (self._name, node.public_ips[0])
 	
 	def down(self, driver, conn):
-		print "-- Checking whether node '%s' currently exists" % self._name
-
 		try:
 			existing_node = find_node(conn, self._name)
-			print "    Destroying node: %s" % self._name
+			print "--  Destroying node: %s" % self._name
 			existing_node.destroy()
 		except Exception:
 			print "    Does not exist"
 	
 	def reboot(self, driver, conn):
-		print "-- Checking whether node '%s' currently exists" % self._name
-
 		try:
 			existing_node = find_node(conn, self._name)
-			print "    Rebooting node: %s" % self._name
+			print "--  Rebooting node: %s" % self._name
 			existing_node.reboot()
 		except Exception:
 			print "    Does not exist"
 
 	def ssh(self, driver, conn):
-		print "-- Checking whether node '%s' currently exists" % self._name
-
 		try:
 			existing_node = find_node(conn, self._name)
-			print "    Launching SSH connection to node: %s (root@%s:22)" % (self._name, existing_node.public_ips[0])
+			print "--  Launching SSH connection to node: %s (root@%s:22)" % (self._name, existing_node.public_ips[0])
 			subprocess.call(["ssh", "root@%s" % existing_node.public_ips[0] ])
-			print "    ====== SSH CONNECTION TERMINATED ======"
+			print "--  SSH Connection terminated"
 		except Exception:
 			print "    Does not exist"
 
@@ -169,7 +181,7 @@ def sync(command, tag):
 
 	for nodename, node in nodes.items():
 		if node.matches(tag) or tag == "":
-			print "Applying command (%s) to node: %s" % (command, nodename)
+			print "--  Applying command (%s) to node: %s" % (command, nodename)
 			if command == "up":
 				node.up(Driver, conn)
 			if command == "down":
