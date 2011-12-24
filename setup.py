@@ -19,4 +19,5 @@ setup(
             'blitzem = blitzem.console:main',
         ],
     },
+    test_suite = "blitzem.test.test_all",
 )
