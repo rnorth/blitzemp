@@ -1,6 +1,14 @@
 .Python
-bin/
 blitz.pyc
 examples/tiered/paramiko.log
 include/
 lib/
+.installed.cfg
+parts
+develop-eggs
+eggs
+downloads
+lib
+build
+dist
+**/*.pyc

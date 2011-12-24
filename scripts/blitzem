@@ -2,7 +2,7 @@
 
 import sys
 
-from blitz import sync
+from blitzem.core import sync
 
 if __name__ == "__main__":
 
