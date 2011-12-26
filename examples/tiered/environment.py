@@ -1,6 +1,6 @@
 import os
 
-from blitz import Node, Size, defaults
+from blitzem.model import Node, Size, defaults
 from libcloud.compute.deployment import MultiStepDeployment, ScriptDeployment, SSHKeyDeployment
 
 
