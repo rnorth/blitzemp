@@ -1,3 +1,10 @@
+""""
+core.py
+
+Incorporates blitzem's core control-flow logic and processing of settings file.
+
+Copyright (c) 2011 Richard North. All rights reserved.
+"""
 from libcloud.compute.types import Provider
 from libcloud.compute.providers import get_driver
 from libcloud.compute.deployment import MultiStepDeployment, ScriptDeployment, SSHKeyDeployment

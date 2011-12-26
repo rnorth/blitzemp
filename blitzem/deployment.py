@@ -1,8 +1,9 @@
-"""
+""""
 deployment.py
 
-Created by Richard North on 2011-12-26.
-Copyright (c) 2011 __MyCompanyName__. All rights reserved.
+Extensions to libcloud.compute.deployment
+
+Copyright (c) 2011 Richard North. All rights reserved.
 """
 from libcloud.compute.deployment import ScriptDeployment
 

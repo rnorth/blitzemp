@@ -1,4 +1,11 @@
 #!/usr/bin/env python
+""""
+console.py
+
+Provides the command line interface to blitzem.
+
+Copyright (c) 2011 Richard North. All rights reserved.
+"""
 
 import sys
 
