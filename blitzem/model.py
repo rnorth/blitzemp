@@ -129,13 +129,17 @@ class Node:
 """
 Standard defaults that should be used in the absence of specific node settings. Can be overriden in environment.py.
 """
+user_public_ssh_key = os.path.expanduser("~/.ssh/id_rsa.pub")
+if not os.path.exists(user_public_ssh_key):
+	raise Exception("A public SSH key is required for SSH access to nodes, but could not be found at: %s. Please create a public/private keypair and try again." % user_public_ssh_key)
+	
 defaults ={
 	"os": "Ubuntu 11.10",
 	"size": Size(ram=256, disk=10),
 	"deployment": MultiStepDeployment([
 		# Note: This key will be added to the authorized keys for the root user
 		# (/root/.ssh/authorized_keys)
-		SSHKeyDeployment(open(os.path.expanduser("~/.ssh/id_rsa.pub")).read()),
+		SSHKeyDeployment(open(user_public_ssh_key).read()),
 		LoggedScriptDeployment("apt-get update")
 	])
 }
