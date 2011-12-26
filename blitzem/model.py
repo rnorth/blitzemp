@@ -9,6 +9,29 @@ import os
 from libcloud.compute.deployment import MultiStepDeployment, ScriptDeployment, SSHKeyDeployment
 from blitzem.deployment import LoggedScriptDeployment
 
+def find_image(conn, name):
+	images = [obj for obj in conn.list_images() if obj.name==name]
+	if len(images) == 0:
+		raise Exception("Could not find an image matching name %s" % name)
+	return images[0]
+
+def find_node(conn, name):
+	print "--  Checking whether node '%s' currently exists" % name
+	nodes = [obj for obj in conn.list_nodes() if obj.name==name]
+	if len(nodes) == 0:
+		raise Exception("Node %s not found" % name)
+	return nodes[0]
+
+def find_size(conn, size):
+	sizes = conn.list_sizes()
+	if size.ram != None:
+		sizes = [obj for obj in sizes if obj.ram == size.ram]
+	if size.disk != None:
+		sizes = [obj for obj in sizes if obj.disk == size.disk]
+	if len(sizes) == 0:
+		raise Exception("Could not find a size for RAM:%d and disk:%d" % (size.ram, size.disk))
+	return sizes[0]
+
 class Size:
 	"""
 	Represents sizing requirements for a Node.
