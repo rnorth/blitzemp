@@ -1,7 +1,7 @@
 import os
 import urllib
 
-from distutils.core import setup
+from distutils.core import setup, Command
 
 # this function borrowed from https://bitbucket.org/wnielson/django-chronograph
 def setup_distribute():
@@ -21,6 +21,16 @@ def setup_distribute():
 # Make sure we have Distribute installed
 setup_distribute()
 
+class PyTest(Command):
+    user_options = []
+    def initialize_options(self):
+        pass
+    def finalize_options(self):
+        pass
+    def run(self):
+        import sys,subprocess
+        errno = subprocess.call([sys.executable, 'runtests.py'])
+        raise SystemExit(errno)
 
 setup(
     name='blitzem',
@@ -39,5 +49,5 @@ setup(
             'blitzem = blitzem.console:main',
         ],
     },
-    test_suite = "blitzem.test.test_all",
+    cmdclass = {'test': PyTest},
 )

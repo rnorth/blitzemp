@@ -66,14 +66,17 @@ def process_settings():
 	config.set('rackspace', 'api_key', api_key)
 	config.write(open(config_file, 'w'))
 
-	Driver = get_driver(Provider.RACKSPACE_UK)
-	conn = Driver(username, api_key)
+	selected_driver = get_driver(Provider.RACKSPACE_UK)
+	established_conn = selected_driver(username, api_key)
 
-	return (Driver, conn)
+	return (selected_driver, established_conn)
 
-def sync(command, tag):
-
-	(Driver, conn) = process_settings()
+def sync(command, tag, driver_override=None, conn_override=None):
+	
+	driver = driver_override
+	conn = conn_override
+	if driver==None or conn==None:
+		(driver, conn) = process_settings()
 
 	print "\n\n"
 
@@ -81,11 +84,11 @@ def sync(command, tag):
 		if node.matches(tag) or tag == "":
 			print "--  Applying command (%s) to node: %s" % (command, nodename)
 			if command == "up":
-				node.up(Driver, conn)
+				node.up(driver, conn)
 			if command == "down":
-				node.down(Driver, conn)
+				node.down(driver, conn)
 			if command == "reboot":
-				node.reboot(Driver, conn)
+				node.reboot(driver, conn)
 			if command == "ssh":
-				node.ssh(Driver, conn)
+				node.ssh(driver, conn)
 			print "\n"
