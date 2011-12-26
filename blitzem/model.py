@@ -29,7 +29,7 @@ def find_size(conn, size):
 	if size.disk != None:
 		sizes = [obj for obj in sizes if obj.disk == size.disk]
 	if len(sizes) == 0:
-		raise Exception("Could not find a size for RAM:%d and disk:%d" % (size.ram, size.disk))
+		raise Exception("Could not find a size for RAM:%s and disk:%s" % (size.ram, size.disk))
 	return sizes[0]
 
 class Size:
