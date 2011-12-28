@@ -10,6 +10,7 @@ from libcloud.compute.providers import get_driver
 from libcloud.compute.deployment import MultiStepDeployment, ScriptDeployment, SSHKeyDeployment
 
 from blitzem.model import Size, Node, defaults, nodes
+from blitzem.print_table import print_table
 
 import libcloud.security
 import os
@@ -56,10 +57,33 @@ def sync(command, tag, driver_override=None, conn_override=None):
 		(driver, conn) = process_settings()
 
 	print "\n\n"
+	
+	if command == "status":
+		print "--  Retrieving status of all nodes"
+		
+		table_data = [("Name", "Status", "IP Address", "Tags", "State")]
+		for node in nodes:
+			table_data.append(node.status(driver, conn))
+		print_table(table_data)
+		
+		print "\nUnmatched nodes (live in cloud but not present in environment.py):"
+		nodenames = [obj._name for obj in nodes]
+		unmatched_nodes = [(obj.name, obj.public_ips[0]) for obj in conn.list_nodes() if obj.name not in nodenames]
+		for node in unmatched_nodes:
+			print "%s\t%s" % node
+		
+		return
+		
+	if command == "hostfile":
+		print "-- Retrieving node information for /etc/hosts"
+		existing_nodes = [(obj.public_ips[0], obj.name) for obj in conn.list_nodes()]
+		for node in existing_nodes:
+			print "%s\t%s" % node
+		return
 
-	for nodename, node in nodes.items():
+	for node in nodes:
 		if node.matches(tag) or tag == "":
-			print "--  Applying command (%s) to node: %s" % (command, nodename)
+			print "--  Applying command (%s) to node: %s" % (command, node._name)
 			if command == "up":
 				node.up(driver, conn)
 			if command == "down":

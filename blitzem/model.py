@@ -15,8 +15,11 @@ def find_image(conn, name):
 		raise Exception("Could not find an image matching name %s" % name)
 	return images[0]
 
-def find_node(conn, name):
-	print "--  Checking whether node '%s' currently exists" % name
+def find_node(conn, name, silent=False):
+	
+	if not silent:
+		print "--  Checking whether node '%s' currently exists" % name
+	
 	nodes = [obj for obj in conn.list_nodes() if obj.name==name]
 	if len(nodes) == 0:
 		raise Exception("Node %s not found" % name)
@@ -31,6 +34,14 @@ def find_size(conn, size):
 	if len(sizes) == 0:
 		raise Exception("Could not find a size for RAM:%s and disk:%s" % (size.ram, size.disk))
 	return sizes[0]
+
+libcloud_state_mapping = {
+	0: "RUNNING",
+	1: "REBOOTING",
+	2: "TERMINATED",
+	3: "PENDING",
+	4: "UNKNOWN"
+}
 
 class Size:
 	"""
@@ -82,7 +93,7 @@ class Node:
 		else:
 			self._deployment = deployment
 
-		nodes[name] = self
+		nodes.append(self)
 		# print "Instantiated node %s" % name
 
 	def __repr__(self):
@@ -149,6 +160,26 @@ class Node:
 			print "--  SSH Connection terminated"
 		except Exception:
 			print "    Does not exist"
+			
+	def status(self, driver, conn):
+		try:
+			existing_node = find_node(conn, self._name, silent=True)
+			status = "UP"
+			state = libcloud_state_mapping[existing_node.state]
+			size = existing_node.size
+			image = existing_node.image
+			extra = existing_node.extra
+			ip = existing_node.public_ips[0]
+		except Exception:
+			status = "DOWN"
+			ip = "n/a"
+			state = ""
+			size = ""
+			image = ""
+			extra = ""
+		
+		return (self._name, status, ip, str(self._tags), state)
+		
 """
 Standard defaults that should be used in the absence of specific node settings. Can be overriden in environment.py.
 """
@@ -168,6 +199,6 @@ defaults ={
 }
 
 """
-Maintain a dictionary of known (i.e. specified in environment.py) nodes.
+Maintain a list of known (i.e. specified in environment.py) nodes.
 """
-nodes = {}
+nodes = []
