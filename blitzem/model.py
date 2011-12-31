@@ -6,8 +6,18 @@ Describes the model of blitzem's DSL.
 Copyright (c) 2011 Richard North. All rights reserved.
 """
 import os
+import subprocess
+
+from libcloud.loadbalancer.base import Member, Algorithm
 from libcloud.compute.deployment import MultiStepDeployment, ScriptDeployment, SSHKeyDeployment
 from blitzem.deployment import LoggedScriptDeployment
+from libcloud.common.openstack import AUTH_API_VERSION
+
+"""
+Maintain a list of known (i.e. specified in environment.py) nodes.
+"""
+nodes = []
+load_balancers = []
 
 def find_image(conn, name):
 	images = [obj for obj in conn.list_images() if obj.name==name]
@@ -25,6 +35,16 @@ def find_node(conn, name, silent=False):
 		raise Exception("Node %s not found" % name)
 	return nodes[0]
 
+def find_lb(lb_driver, name, silent=False):
+
+	if not silent:
+		print "--  Checking whether load balancer '%s' currently exists" % name
+
+	balancers = [obj for obj in lb_driver.list_balancers() if obj.name==name]
+	if len(balancers) == 0:
+		raise Exception("Load Balancer %s not found" % name)
+	return balancers[0]
+	
 def find_size(conn, size):
 	sizes = conn.list_sizes()
 	if size.ram != None:
@@ -155,11 +175,13 @@ class Node:
 		"""
 		try:
 			existing_node = find_node(conn, self._name)
-			print "--  Launching SSH connection to node: %s (root@%s:22)" % (self._name, existing_node.public_ips[0])
-			subprocess.call(["ssh", "root@%s" % existing_node.public_ips[0] ])
-			print "--  SSH Connection terminated"
 		except Exception:
 			print "    Does not exist"
+			return
+		
+		print "--  Launching SSH connection to node: %s (root@%s:22)" % (self._name, existing_node.public_ips[0])
+		subprocess.call(["ssh", "root@%s" % existing_node.public_ips[0] ])
+		print "--  SSH Connection terminated"
 			
 	def status(self, driver, conn):
 		try:
@@ -179,14 +201,80 @@ class Node:
 			extra = ""
 		
 		return (self._name, status, ip, str(self._tags), state)
+	
+	def libcloud_node(self, driver, conn):
+		try:
+			return find_node(conn, self._name)
+		except Exception:
+			return None
+
+class LoadBalancer:
+	def __init__(self, name, applies_to_tag="", algorithm="ROUND_ROBIN", port=80, protocol="http"):
+		self._name = name
+		self._applies_to_tag = applies_to_tag
+		self._port = port
+		self._protocol = protocol
 		
+		load_balancers.append(self)
+	
+	def up(self, compute_driver, established_compute_conn, lb_driver):
+		
+		# Find all nodes this LB applies to
+		applicable_nodes = [obj for obj in nodes if obj.matches(self._applies_to_tag)]
+		if len(nodes)==0:
+			raise Exception("This Load Balancer doesn't have any applicable Nodes! (Looking for Nodes tagged '%s')" % self._applies_to_tag)
+		members = []
+		for node in nodes:
+			libcloud_node = node.libcloud_node(compute_driver, established_compute_conn)
+			if libcloud_node != None:
+				members.append(Member(None, libcloud_node.public_ips[0], 8080))
+		print members
+		if len(members)==0:
+			raise Exception("At least one node must be up to create the Load Balancer")
+		
+		# TODO - replace. Libcloud hardcodes 'ord' into the URL for single region support. 
+		# The below is a nasty hack to overcome this
+		print lb_driver.connection.lb_url
+		lb_driver.connection.lb_url = lb_driver.connection.lb_url.replace("ord.", "")
+		print lb_driver.connection.lb_url
+		
+		AUTH_API_VERSION = '2.0'
+		try:
+			existing_lb = find_lb(lb_driver, self._name)
+			print existing_lb
+		except Exception:
+			print "    Does not exist"
+			print lb_driver.list_balancers()
+			
+			balancer = lb_driver.create_balancer(	name=self._name, members=members, port=self._port, protocol=self._protocol)
+			
+			print "--  Created Load Balancer, balancing load on: %s://%s:%s" % (self._protocol, balancer.ip, self._port)
+	
+	def down(self, lb_driver):
+		
+		# TODO - replace. Libcloud hardcodes 'ord' into the URL for single region support. 
+		# The below is a nasty hack to overcome this
+		print lb_driver.connection.lb_url
+		lb_driver.connection.lb_url = lb_driver.connection.lb_url.replace("ord.", "")
+		print lb_driver.connection.lb_url
+		
+		try:
+			existing_lb = find_lb(lb_driver, self._name)
+			print "--  Destroying Load Balancer: %s" % self._name
+			existing_lb.destroy()
+		except Exception:
+			print "    Does not exist"
+	
+	def matches(self, tag):
+		return True
+	
 """
 Standard defaults that should be used in the absence of specific node settings. Can be overriden in environment.py.
 """
 user_public_ssh_key = os.path.expanduser("~/.ssh/id_rsa.pub")
 if not os.path.exists(user_public_ssh_key):
 	raise Exception("A public SSH key is required for SSH access to nodes, but could not be found at: %s. Please create a public/private keypair and try again." % user_public_ssh_key)
-	
+
 defaults ={
 	"os": "Ubuntu 11.10",
 	"size": Size(ram=256, disk=10),
@@ -197,8 +285,3 @@ defaults ={
 		LoggedScriptDeployment("apt-get update")
 	])
 }
-
-"""
-Maintain a list of known (i.e. specified in environment.py) nodes.
-"""
-nodes = []

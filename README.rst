@@ -25,6 +25,11 @@ Usage
 
 Tailor the environment.py file to suit your desired server environment - example content shown here::
 
+    LoadBalancer(   name="web_lb1",
+                    applies_to_tag="web",     # all nodes matching this tag will be fronted by this LB
+                    port=8080,                # what input & output port should be balanced
+                    protocol="http")
+
     Node( name="web1",
           tags=["web"])
 
@@ -74,6 +79,27 @@ With an environment.py in the current working directory, the ``blitzem`` command
    $ blitzem ssh db1               # launches an interactive SSH session to db1
 
    $ blitzem reboot web            # runs a reboot of the 'web' tier
+
+   $ blitzem status                # displays a status table similar to the below:
+   Blitzing all nodes status
+
+   --  Retrieving status of all nodes
+   Name Status  IP Address      Tags    State  
+   ---- ------  -------------   ------- -------
+   web1 UP      31.222.171.85   ['web'] RUNNING
+   web2 UP      31.222.171.86   ['web'] RUNNING
+
+   Unmatched nodes (live in cloud but not present in environment.py):
+   serverA  46.38.172.52
+
+   $ blitzem hostfile              # for convenience, enumerate nodes in /etc/hosts format
+   Blitzing all nodes hostfile
+
+   -- Retrieving node information for /etc/hosts
+   46.38.172.52 serverA
+   31.222.171.85    web1
+   31.222.171.86    web2
+
 
 
 Limitations

@@ -1,7 +1,7 @@
 import random
 import sys
 
-from blitzem.test.dummynode import DummyNode
+from blitzem.test.dummies import DummyNode
 from blitzem.core import sync
 from blitzem.model import nodes
 
