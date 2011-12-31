@@ -5,7 +5,7 @@ from setuptools import setup, Command
 
 setup(
     name='blitzem',
-    version='0.1.0',
+    version='0.1.1',
     author='Richard North',
     author_email='rich.north@gmail.com',
     packages=['blitzem','blitzem.test'],
