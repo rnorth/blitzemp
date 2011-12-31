@@ -231,14 +231,7 @@ class LoadBalancer:
 		print members
 		if len(members)==0:
 			raise Exception("At least one node must be up to create the Load Balancer")
-		
-		# TODO - replace. Libcloud hardcodes 'ord' into the URL for single region support. 
-		# The below is a nasty hack to overcome this
-		print lb_driver.connection.lb_url
-		lb_driver.connection.lb_url = lb_driver.connection.lb_url.replace("ord.", "")
-		print lb_driver.connection.lb_url
-		
-		AUTH_API_VERSION = '2.0'
+
 		try:
 			existing_lb = find_lb(lb_driver, self._name)
 			print existing_lb
@@ -251,12 +244,6 @@ class LoadBalancer:
 			print "--  Created Load Balancer, balancing load on: %s://%s:%s" % (self._protocol, balancer.ip, self._port)
 	
 	def down(self, lb_driver):
-		
-		# TODO - replace. Libcloud hardcodes 'ord' into the URL for single region support. 
-		# The below is a nasty hack to overcome this
-		print lb_driver.connection.lb_url
-		lb_driver.connection.lb_url = lb_driver.connection.lb_url.replace("ord.", "")
-		print lb_driver.connection.lb_url
 		
 		try:
 			existing_lb = find_lb(lb_driver, self._name)

@@ -65,6 +65,10 @@ def process_settings():
 	compute_driver = get_compute_driver(Compute_Provider.RACKSPACE_UK)
 	lb_driver = get_lb_driver(LB_Provider.RACKSPACE_UK)(username, api_key)
 	established_compute_conn = compute_driver(username, api_key)
+	
+	# TODO - replace. Libcloud hardcodes 'ord' into the URL for single region support. 
+	# The below is a nasty hack to overcome this
+	lb_driver.connection.lb_url = lb_driver.connection.lb_url.replace("ord.", "")
 
 	return (compute_driver, lb_driver, established_compute_conn)
 

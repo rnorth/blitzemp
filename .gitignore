@@ -13,3 +13,4 @@ dist/
 *.pyc
 *.egg
 *.tar.gz
+examples/**/curl-ca-bundle.crt
