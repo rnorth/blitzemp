@@ -35,15 +35,7 @@ class DummyImage():
 dummy_image = DummyImage()
 
 class DummyDriver():
-	def __init__(self):
-		print "Created DummyDriver"
-		self.deploy_lb_called = False
-	
-	def create_balancer(	name,
-							algorithm,
-							port, protocol,
-							members):
-		self.deploy_lb_called = True
+	pass
 
 class DummyLibCloudNode():
 	def __init__(self, nodename):

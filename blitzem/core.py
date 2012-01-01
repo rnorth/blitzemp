@@ -72,11 +72,12 @@ def process_settings():
 
 	return (compute_driver, lb_driver, established_compute_conn)
 
-def sync(command, tag, driver_override=None, conn_override=None):
+def sync(command, tag, compute_driver_override=None, lb_driver_override=None, compute_conn_override=None):
 	
-	driver = driver_override
-	conn = conn_override
-	if driver==None or conn==None:
+	compute_driver = compute_driver_override
+	established_compute_conn = compute_conn_override
+	lb_driver = lb_driver_override
+	if compute_driver==None or established_compute_conn==None:
 		(compute_driver, lb_driver, established_compute_conn) = process_settings()
 	
 	if command == "status":

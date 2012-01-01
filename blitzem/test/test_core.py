@@ -17,12 +17,12 @@ class TestCore(unittest.TestCase):
 		nodes.append(self.dummy_node)
 
 	def test_sync_matches_name(self):
-		sync('ssh','dummy', driver_override="dummy_driver", conn_override="dummy_conn")
+		sync('ssh','dummy', compute_driver_override="dummy_driver", compute_conn_override="dummy_conn")
 		self.assertTrue(self.dummy_node.matches_called)
 		self.assertTrue(self.dummy_node.ssh_called)
 		
 	def test_sync_no_matches_wrong_name(self):
-		sync('ssh','notdummy', driver_override="dummy_driver", conn_override="dummy_conn")
+		sync('ssh','notdummy', compute_driver_override="dummy_driver", compute_conn_override="dummy_conn")
 		self.assertTrue(self.dummy_node.matches_called)
 		self.assertFalse(self.dummy_node.ssh_called)
 
